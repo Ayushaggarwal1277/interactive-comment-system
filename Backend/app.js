@@ -48,11 +48,32 @@ app.use((req, res, next) => {
   next();
 });
 
+
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/api/users",userRouter);
+// Root route
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'Interactive Comment System API - Backend is running!',
+    version: '1.0.0',
+    mongodb: 'Connected',
+    endpoints: {
+      users: '/api/users',
+      comments: '/api/comments',
+      health: '/health'
+    }
+  });
+});
 
-app.use("/api/comments",commentRouter);
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
+app.use("/api/users", userRouter);
+app.use("/api/comments", commentRouter);
+
 
 export default app;
