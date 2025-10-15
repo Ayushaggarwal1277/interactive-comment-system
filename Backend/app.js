@@ -15,7 +15,7 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:5175',
-  'https://interactive-comment-system.vercel.app/',
+  'https://interactive-comment-system-nykfhl00a.vercel.app/',
   process.env.CORS_ORIGIN
 ].filter(Boolean);
 
