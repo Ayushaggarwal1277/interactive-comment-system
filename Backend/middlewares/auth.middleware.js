@@ -3,30 +3,37 @@ import asyncHandler from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 
 export const verifyJWT = asyncHandler(async(req, res, next) => {
-    const token = req.cookies.accessToken;
+    // Check for token in cookies OR Authorization header
+    const token = req.cookies?.accessToken || 
+                  req.headers.authorization?.replace("Bearer ", "");
 
     if (!token) {
         return res.status(401).json({
             success: false,
-            message: "Unauthorized"
+            message: "Unauthorized request"
         });
     }
 
-    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    try {
+        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-    const user = await User.findById(decodedToken._id).select("-password -refreshToken");
+        const user = await User.findById(decodedToken._id).select("-password -refreshToken");
 
-    if(!user)
-    {
+        if(!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid access token"
+            });
+        }
+
+        req.user = user;
+        next();
+    } catch (error) {
         return res.status(401).json({
             success: false,
-            message: "Unauthorized"
+            message: "Invalid or expired token"
         });
     }
-
-    req.user = user;
-    next();
-    
 });
 
 // Optional auth - doesn't require login but attaches user if token exists

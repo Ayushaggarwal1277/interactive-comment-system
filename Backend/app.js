@@ -12,18 +12,24 @@ const app = express();
 // CORS Configuration - Allow multiple origins
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://localhost:3001',
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:5175',
   'https://interactive-comment-system-352o.vercel.app',
-
-  process.env.CORS_ORIGIN
+  process.env.CORS_ORIGIN,
+  process.env.FRONTEND_URL
 ].filter(Boolean);
 
 const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
+    
+    // Allow all Vercel deployments
+    if (origin && origin.includes('.vercel.app')) {
+      return callback(null, true);
+    }
     
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);

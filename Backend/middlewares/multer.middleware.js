@@ -7,7 +7,9 @@ const __dirname = path.dirname(__filename);
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const uploadPath = path.join(__dirname, '../uploads/');
+        // Use /tmp for Vercel serverless functions (only writable directory)
+        // Falls back to local uploads for development
+        const uploadPath = process.env.VERCEL ? '/tmp' : path.join(__dirname, '../uploads/');
         console.log("Multer saving file to:", uploadPath);
         cb(null, uploadPath);
     },

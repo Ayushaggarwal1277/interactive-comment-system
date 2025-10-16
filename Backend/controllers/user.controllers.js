@@ -115,8 +115,10 @@ const registerUser = asynchandler(async(req, res) => {
     const { accessToken, refreshToken } = await generateAccessandRefreshTokens(createdUser._id);
 
     const options = {
-        secure : true,
-        httpOnly : true,
+        httpOnly: true,
+        secure: true, // must be true on https (Vercel)
+        sameSite: "none", // important for cross-domain requests
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     }
 
     return res.status(201)
@@ -170,6 +172,8 @@ const loginUser = asynchandler(async(req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000
     }
 
     return res.status(200)
@@ -208,7 +212,9 @@ const refreshToken = asynchandler(async(req, res) => {
         const { accessToken, refreshToken: newRefreshToken } = await generateAccessandRefreshTokens(user._id);
         const options = {
             httpOnly: true,
-            secure: true,    
+            secure: true,
+            sameSite: "none",
+            maxAge: 7 * 24 * 60 * 60 * 1000
         }
     
         return res.status(200)
@@ -292,6 +298,8 @@ const googleLoginUser = asynchandler(async(req, res) => {
         const options = {
             httpOnly: true,
             secure: true,
+            sameSite: "none",
+            maxAge: 7 * 24 * 60 * 60 * 1000
         };
 
         return res.status(200)
